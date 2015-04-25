@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>YoumoRock Radio</title>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript">
+//<![CDATA[
+var buffering=true;
+var myMedia;
+var quality = window.localStorage.getItem("YRQuality");
+if (!quality) {
+quality = 0;
+window.localStorage.setItem("YRQuality", quality);
+}
+var stream = ["http://youmorock.ru:8000/play64", "http://youmorock.ru:8000/play"];
+var text = quality==0 ? 'Низкое (64кБит/с)' : 'Высокое (128кБит/c)';
+var elclass = quality==0 ? 'green' : 'blue';
+
+function showtrackname() {  
+    $.ajax({  
+        url: "http://youmorock.ru/online.htm.php",  
+        cache: false,  
+        success: function(html){
+		var buttons='<img src="js/like.gif" alt="Like" id="like" title="Нравится" onclick="voting(\'like\');"><img src="js/dislike.gif" alt="Dislike" id="dislike" title="Не нравится" onclick="voting(\'dislike\');"><br>Как вам?';
+			if($("#nowplaying").html()!=html) {
+				$("#rating").html(buttons);
+				$("#nowplaying").html(html);  
+				$("title").html(html);
+			}
+        }  
+    });  
+}  
+function gettop10() {  
+    $.ajax({  
+        url: "http://youmorock.ru/top10.php",  
+        cache: false,  
+        success: function(html){
+			$("#top10container").html(html);
+        }  
+    });  
+}
+function voting(type) {
+	var title = $("#nowplaying").html();
+	$.get( "http://youmorock.ru/rating.php?title="+escape(title)+"&type="+type, function(data) {
+		$("#rating").html('<span class="ratingcount">'+data+'</span>');
+	});
+}
+function showmessage(text) {
+	$("#messagebox").html(text);
+	$("#messagebox").show();
+	setTimeout(function() {$("#messagebox").hide();}, 3000);
+}
+
+
+$(document).ready(function(){
+$("#quality").removeClass();
+$("#quality").addClass(elclass);
+$("#quality").html(text);
+	setTimeout(function() {$("#loading").hide();}, 2000);
+	gettop10();
+    setInterval('showtrackname()',5000);
+});
+
+//]]> 
+	</script>
+    </head>
+    <body>
+	<div id="loading"></div>
+    <div id="player">
+		<div id="jp-play"></div>
+		<div id="jp-pause" style="display:none;"></div>		
+	</div>		
+	<div id="messagebox" style="display:none"></div>
+	<div id="nowplaying"></div>
+	<div id="rating">
+		<img src="js/like.gif" alt="Like" id="like" title="Нравится">
+		<img src="js/dislike.gif" alt="Dislike" id="dislike" title="Не нравится"><br>
+		Как вам?
+	</div>
+	<div id="overlay" style="display:none;"></div>
+	<div id="settings" style="display:none;">
+		<div id="settings_close"></div>
+		<p>Качество: <span id="quality" class="blue">Высокое (128кБит/c)</span></p>
+	
+		<p><b>Не работает?</b><br> Попробуйте <span id="reload" class="orange">перезагрузить плеер</span>.</p>
+	</div>
+	<div id="top10" style="display:none;">
+		<div id="top10_close"></div>
+		<div id="top10container"></div>
+	</div>
+	<div id="footer">
+		<div id="top10icon"></div>
+		<div id="settingsicon"></div>
+		<iframe src="http://youmorock.ru/chat/"></iframe>
+	</div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript">
+
+		document.getElementById('settings_close').addEventListener('touchend', function() {$('#settings').hide();setTimeout(function() {$('#overlay').hide();}, 500);}, false);
+		document.getElementById('top10_close').addEventListener('touchend', function() {$('#top10').hide();setTimeout(function() {$('#overlay').hide();}, 500);}, false);
+		document.getElementById('overlay').addEventListener('touchend', function() {$('#settings').hide();setTimeout(function() {$('#overlay').hide();}, 500);}, false);
+		document.getElementById('reload').addEventListener('touchend', function(){window.location.reload();}, false);
+		document.getElementById('like').addEventListener('touchend', function(){voting("like");}, false);
+		document.getElementById('dislike').addEventListener('touchend', function(){voting("dislike");}, false);
+		
+		document.getElementById('jp-play').addEventListener('touchend', function(){
+			myMedia.play();
+			$("#jp-play").hide();
+			if(buffering) {showmessage('Буферизация. Подождите немного.');}
+			buffering=false;
+			$("#jp-pause").show();
+		});
+		document.getElementById('jp-pause').addEventListener('touchend', function(){myMedia.pause();$("#jp-play").show();$("#jp-pause").hide();});
+
+
+		
+		document.getElementById('quality').addEventListener('touchend', function(){
+			quality = quality==0 ? 1 : 0;
+			window.localStorage.setItem("YRQuality", quality);
+			myMedia.release();
+			myMedia = new Media(stream[quality], function() {});
+			buffering=true;
+			$("#jp-play").show();$("#jp-pause").hide();
+			var text = quality==0 ? 'Низкое (64кБит/с)' : 'Высокое (128кБит/c)';
+			var elclass = quality==0 ? 'green' : 'blue';
+			$("#quality").removeClass();
+			$("#quality").addClass(elclass);
+			$("#quality").html(text);
+		}, false);
+		
+		document.addEventListener("menubutton", function() {
+			$("#overlay").show();
+			setTimeout(function() {$("#settings").show();}, 150);
+		}, false);
+		document.getElementById('settingsicon').addEventListener("touchend", function() {
+			$("#overlay").show();
+			setTimeout(function() {$("#settings").show();}, 150);
+		}, false);
+		document.getElementById('top10icon').addEventListener("touchend", function() {
+			gettop10();
+			$("#overlay").show();
+			setTimeout(function() {$("#top10").show();}, 150);
+		}, false);
+		document.addEventListener("backbutton", function() {
+			if($("settings").css("display")=="block") {
+				$('#settings').hide();
+				setTimeout(function() {$('#overlay').hide();}, 500);
+			}
+			else {
+				if(confirm('Закрыть приложение?')) {navigator.app.exitApp();}
+			}
+		}, false);
+	function onDeviceReady() {
+		myMedia = new Media(stream[quality], function() {});
+		buffering=true;
+	}
+	document.addEventListener("deviceready", onDeviceReady, false);
+        </script>
+    </body>
+</html>

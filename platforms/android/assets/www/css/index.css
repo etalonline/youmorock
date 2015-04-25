@@ -1,0 +1,30 @@
+body {margin:0px;}
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+#loading {position:absolute;width:100%;height:100%;background:#000000 url('../js/blacklogo.png') center center no-repeat;background-size:80% auto;z-index:10;}
+#headblock, #footblock {}
+		ul, li {display:inline;margin:0px;padding:0px;}
+		#jp-play, #jp-pause {display:block; width:60px; height:60px; border-radius:30px;}
+		#jp-play {background:url('../js/youmorock-player-circle.png');background-size:100%;}
+		#jp-pause {background:url('../js/youmorock-player-circle-stop.png');background-size:100%;}
+		#player, #nowplaying, #rating {position:absolute;text-align:center; }
+		#player {width:60px;left:5px;top:30px;z-index:9}
+		#nowplaying {height:90px;width:100%; top:5px; left:0px;vertical-align:center; background:url('../js/whitelogo.png') center bottom no-repeat;background-size:auto 45%;z-index:0;}
+		#rating {width:90px; top:30px;right:5px;z-index:9}
+		#like, #dislike {cursor:hand;cursor:pointer;}
+		#footer {position:absolute; bottom: 5px; width:96%;left:2%;height:65%}
+		#settingsicon {width:60px;height:60px;background:url('../js/settings.png') center center no-repeat;background-size:100%;position:absolute;right:0px;top:-40px;}
+		#top10icon {width:60px;height:60px;background:url('../js/rating.png') center center no-repeat;background-size:100%;position:absolute;right:80px;top:-40px;}
+
+		iframe {width:100%; height:94%;border:black 1px solid;}
+		#overlay {position:absolute;width:100%;height:100%;z-index:10; background:#000000; opacity:0.7}
+		#settings, #top10 {position:absolute;width:80%;height:80%;background:#ffffff;z-index:11;left:10%;top:10%;border-radius:5px;}
+		#settings p {text-align:center;margin-top:50px;}
+		#top10container {margin:5%}
+		#settings_close, #top10_close{position:absolute;width:48px;height:48px;top:0px;right:0px;background:url('../js/close.png') center center no-repeat;}
+		#messagebox {position:absolute;width:260px;margin-left:-140px;height:40px;padding:10px; background:#000000;color:#ffffff;border-radius:5px;z-index:11;top:20px;left:50%;text-align:center;}
+		.ratingcount {font-size: x-large;}
+		.blue, .green, .red, .orange {text-decoration:underline;}
+		.blue{color:#00a5e1;}
+		.orange {color: #EC8923}
